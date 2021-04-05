@@ -62,9 +62,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
     public void onStart(){
         super.onStart();
-
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
 
     }
 

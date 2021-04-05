@@ -19,18 +19,30 @@ exports.addMessage = functions.https.onCall((data, context) => {
 exports.addFriend = functions.https.onCall((data, context) => {
 	// do something
 	var admin = require("firebase-admin");
-	admin.initializeApp();
+	if (!admin.apps.length) {
+		admin.initializeApp();
+	}else {
+		admin.app();
+	}
+
 	var db = admin.firestore();
+	//db.settings({host:"127.0.0.1:8080",ssl:false});
 
 	const text = data.text;
 	console.log(text);
 
-	var ref = db.collection('Friends').doc(text);
-	const doc = ref.get();
+	var ref = db.collection("Friends").doc(text);
 
-	if(!doc.exists){
-		return "user not found";
-	} else {
-		return "user found"
-	}
+	ref.get().then((doc) => {
+		if (doc.exists) {
+			console.log("success");
+			return "user found";
+		}else {
+			console.log("fail");
+			return "user not found";
+		}
+	})
+
+	return "something went wrong";
+		
 });

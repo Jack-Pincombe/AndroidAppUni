@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,8 @@ import java.util.Map;
 public class FindFriends extends AppCompatActivity {
 
     private FirebaseFunctions mFunctions;
+    private Button addButton;
+    private EditText searchName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +33,18 @@ public class FindFriends extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        searchName = (EditText) findViewById(R.id.friendSearch);
+
+        addButton = (Button) findViewById(R.id.addButton);
         FloatingActionButton fab = findViewById(R.id.fab);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,10 +54,19 @@ public class FindFriends extends AppCompatActivity {
         });
 
         mFunctions = FirebaseFunctions.getInstance();
+        mFunctions.useEmulator("10.0.2.2", 5001);
 
-        Task<String> test = addMessage("test");
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = searchName.getText().toString().trim();
+                Task<String> exists = userExists(email);
+            }
+        });
     }
-    private Task<String> addMessage(String text){
+
+
+    private Task<String> userExists(String text){
         Map<String, Object> data = new HashMap<>();
 
         data.put("text", text);
@@ -52,7 +76,7 @@ public class FindFriends extends AppCompatActivity {
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        String result = task.getResult().toString();
+                        String result = (String) task.getResult().getData();
                         return result;
                     }
                 });
