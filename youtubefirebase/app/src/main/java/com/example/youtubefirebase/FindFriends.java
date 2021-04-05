@@ -72,7 +72,7 @@ public class FindFriends extends AppCompatActivity {
         data.put("text", text);
         data.put("push", true);
 
-        return mFunctions.getHttpsCallable("addFriend").call(data)
+        return mFunctions.getHttpsCallable("friendExiststest").call(data)
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {

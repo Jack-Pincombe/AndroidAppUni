@@ -16,7 +16,7 @@ exports.addMessage = functions.https.onCall((data, context) => {
 
 // method that is going to be attempting to add a friend
 //
-exports.addFriend = functions.https.onCall((data, context) => {
+exports.friendExists = functions.https.onCall((data, context) => {
 	// do something
 	var admin = require("firebase-admin");
 	if (!admin.apps.length) {
@@ -31,9 +31,9 @@ exports.addFriend = functions.https.onCall((data, context) => {
 	const text = data.text;
 	console.log(text);
 
-	var ref = db.collection("Friends").doc(text);
+//	var ref = db.collection("Friends").doc(text);
 
-	ref.get().then((doc) => {
+	return db.collection("Friends").doc(text).get().then((doc) => {
 		if (doc.exists) {
 			console.log("success");
 			return "user found";
@@ -43,6 +43,4 @@ exports.addFriend = functions.https.onCall((data, context) => {
 		}
 	})
 
-	return "something went wrong";
-		
 });
