@@ -44,3 +44,32 @@ exports.friendExists = functions.https.onCall((data, context) => {
 	})
 
 });
+
+
+exports.getFriends = functions.https.onCall((data, context) => {
+	var admin = require("firebase-admin");                                                        if (!admin.apps.length) {                                                                             admin.initializeApp();                                                                }else {                                                                                               admin.app();                                                                          }
+
+	// email of the current user 
+	const username = data.text;
+	console.log("email: ", username);
+	var db = admin.firestore();
+
+        return db.collection("Friends").doc(username).get().then((doc) => {
+		if (doc.exists) {
+			console.log("Data:", doc.data());
+			return doc.data();
+		}else {
+			console.log("fail");
+			return "user not found";
+		}
+	})    
+
+});
+
+function addToPending(){};
+
+function rejectFriendRequest(){};
+
+function acceptFriendRequest(){};
+
+
