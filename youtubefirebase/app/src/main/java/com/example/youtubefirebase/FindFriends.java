@@ -76,7 +76,7 @@ public class FindFriends extends AppCompatActivity {
     /**
      * Method that will get the current users friends and pending friend requests
      *
-     * @param userEmail email of the current user 
+     * @param userEmail email of the current user
      */
     private void getFriendData(String userEmail){
         Map<String, Object> data = new HashMap<>();
@@ -95,7 +95,6 @@ public class FindFriends extends AppCompatActivity {
                         return map;
                     }
                 });
-
     }
 
     private Task<String> userExists(String text){
