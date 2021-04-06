@@ -62,7 +62,6 @@ public class FindFriends extends AppCompatActivity {
         mFunctions.useEmulator("10.0.2.2", 5001);
 
         getFriendData(user.getEmail());
-//        mFriendData = Data.getResult();
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
