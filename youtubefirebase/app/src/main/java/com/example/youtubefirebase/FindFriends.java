@@ -18,6 +18,9 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +28,7 @@ import java.util.Map;
 public class FindFriends extends AppCompatActivity {
 
     private FirebaseFunctions mFunctions;
-    private Button addButton;
+    private Button addButton, showFriendsButton, showPending;
     private EditText searchName;
     private HashMap mFriendData;
     private FirebaseUser user;
@@ -38,23 +41,15 @@ public class FindFriends extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         searchName = (EditText) findViewById(R.id.friendSearch);
-
+        showFriendsButton = (Button) findViewById(R.id.showFriends);
+        showPending = (Button) findViewById(R.id.pendingButton);
         addButton = (Button) findViewById(R.id.addButton);
-        FloatingActionButton fab = findViewById(R.id.fab);
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-            }
-        });
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
 
@@ -70,6 +65,62 @@ public class FindFriends extends AppCompatActivity {
                 Task<String> exists = userExists(email);
             }
         });
+
+        showFriendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                populateTables();
+            }
+        });
+
+        showPending.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                populatePendingTables();
+            }
+        });
+    }
+
+    /**
+     * Method that is going to populate the friends and pending tables off of the data from
+     * cloud
+     */
+    private void populateTables(){
+        TableLayout tl = (TableLayout) findViewById(R.id.friendTable);
+        tl.removeAllViews();
+        TableRow row;
+        TextView view;
+
+        for (int i = 0; i < 4; i++) {
+            row = new TableRow(getApplicationContext());
+            for (int j = 0; j < 3; j++) {
+                view = new TextView(getApplicationContext());
+                view.setText("friend");
+                view.setPadding(20, 20, 20, 20);
+                row.addView(view);
+            }
+            tl.addView(row);
+        }
+//        setContentView(tl);
+    }
+
+    private void populatePendingTables(){
+        TableLayout tl = (TableLayout) findViewById(R.id.friendTable);
+        tl.removeAllViews();
+        TableRow row;
+        TextView view;
+
+        for (int i = 0; i < 4; i++) {
+            row = new TableRow(getApplicationContext());
+            for (int j = 0; j < 3; j++) {
+                view = new TextView(getApplicationContext());
+                view.setText("pending");
+                view.setPadding(20, 20, 20, 20);
+                row.addView(view);
+            }
+            tl.addView(row);
+        }
+//        setContentView(tl);
     }
 
     /**
