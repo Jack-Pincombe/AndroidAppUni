@@ -23,6 +23,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FindFriends extends AppCompatActivity {
@@ -88,39 +89,128 @@ public class FindFriends extends AppCompatActivity {
     private void populateTables(){
         TableLayout tl = (TableLayout) findViewById(R.id.friendTable);
         tl.removeAllViews();
-        TableRow row;
-        TextView view;
+        TableRow row, titleRow;
+        TextView view, titleViewEmail, tileViewButton;
 
-        for (int i = 0; i < 4; i++) {
+        List<String> friends = (List<String>) mFriendData.get("friends");
+
+        titleRow = new TableRow(getApplicationContext());
+        titleViewEmail = new TextView(getApplicationContext());
+        titleViewEmail.setText("Friend Email");
+        titleViewEmail.setPadding(20, 20, 20, 20);
+
+        tileViewButton = new TextView(getApplicationContext());
+        tileViewButton.setText("Remove");
+        tileViewButton.setPadding(20, 20, 20, 20);
+
+        titleRow.addView(titleViewEmail);
+        titleRow.addView(tileViewButton);
+
+        tl.addView(titleRow);
+        for (String email : friends) {
             row = new TableRow(getApplicationContext());
-            for (int j = 0; j < 3; j++) {
-                view = new TextView(getApplicationContext());
-                view.setText("friend");
-                view.setPadding(20, 20, 20, 20);
-                row.addView(view);
-            }
+            view = new TextView(getApplicationContext());
+            view.setText(email);
+            view.setPadding(20, 20, 20, 20);
+
+            TextView button = new TextView(getApplicationContext());
+            button.setText("BUTTON");
+            button.setPadding(20, 20, 20, 20);
+
+            row.addView(view);
+            row.addView(button);
             tl.addView(row);
         }
-//        setContentView(tl);
+    }
+
+    private Button createRemoveButton(String email){
+        return null;
+    }
+
+    private Button createAcceptButton(String email){
+        Map<String, Object> data = new HashMap<>();
+        data.put("pendingEmail", email);
+        data.put("userEmail", user.getEmail());
+        data.put("push", true);
+
+        Button acceptButton = new Button(getApplicationContext());
+        acceptButton.setText("Accept");
+        acceptButton.setPadding(20, 20, 20, 20);
+
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFunctions.getHttpsCallable("rejectFriendRequest")
+                        .call(data);
+            }
+        });
+
+        return acceptButton;
+    }
+
+    private Button createRejectButton(String email){
+        Map<String, Object> data = new HashMap<>();
+        data.put("pendingEmail", email);
+        data.put("userEmail", user.getEmail());
+        data.put("push", true);
+
+        Button rejectButton = new Button(getApplicationContext());
+        rejectButton.setText("Reject");
+        rejectButton.setPadding(20, 20, 20, 20);
+
+
+        rejectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFunctions.getHttpsCallable("rejectFriendRequest")
+                        .call(data);
+            }
+        });
+
+        return rejectButton;
     }
 
     private void populatePendingTables(){
         TableLayout tl = (TableLayout) findViewById(R.id.friendTable);
         tl.removeAllViews();
-        TableRow row;
-        TextView view;
+        TableRow row, titleRow;
+        TextView view, titleViewEmail, tileViewAcceptButton, titleViewRejectButton;
 
-        for (int i = 0; i < 4; i++) {
+        List<String> friends = (List<String>) mFriendData.get("pending");
+
+        titleRow = new TableRow(getApplicationContext());
+        titleViewEmail = new TextView(getApplicationContext());
+        titleViewEmail.setText("Email");
+        titleViewEmail.setPadding(20, 20, 20, 20);
+
+        tileViewAcceptButton = new TextView(getApplicationContext());
+        tileViewAcceptButton.setText("Accept");
+        tileViewAcceptButton.setPadding(20, 20, 20, 20);
+
+        titleViewRejectButton = new TextView(getApplicationContext());
+        titleViewRejectButton.setText("Reject");
+        titleViewRejectButton.setPadding(20, 20, 20, 20);
+
+        titleRow.addView(titleViewEmail);
+        titleRow.addView(tileViewAcceptButton);
+        titleRow.addView(titleViewRejectButton);
+
+        tl.addView(titleRow);
+        for (String email : friends) {
             row = new TableRow(getApplicationContext());
-            for (int j = 0; j < 3; j++) {
-                view = new TextView(getApplicationContext());
-                view.setText("pending");
-                view.setPadding(20, 20, 20, 20);
-                row.addView(view);
-            }
+            view = new TextView(getApplicationContext());
+            view.setText(email);
+            view.setPadding(20, 20, 20, 20);
+
+            Button acceptButton = createAcceptButton(email);
+            Button rejectButton = createRejectButton(email);
+
+            row.addView(view);
+            row.addView(acceptButton);
+            row.addView(rejectButton);
             tl.addView(row);
         }
-//        setContentView(tl);
     }
 
     /**
@@ -131,7 +221,7 @@ public class FindFriends extends AppCompatActivity {
     private void getFriendData(String userEmail){
         Map<String, Object> data = new HashMap<>();
 
-        data.put("text", "jackpincombe@hotmail.co.uk");
+        data.put("text", user.getEmail());
         data.put("push", true);
 
         mFunctions

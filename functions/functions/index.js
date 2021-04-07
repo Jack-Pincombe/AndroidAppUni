@@ -67,8 +67,28 @@ exports.getFriends = functions.https.onCall((data, context) => {
 });
 
 function addToPending(){};
+exports.rejectFriendRequest = functions.https.onCall((data, context) => {
+	var admin = require("firebase-admin");
+	if(!admin.apps.length){
+		admin.initializeApp();
+	}else {
+		admin.app();
+	}
 
-function rejectFriendRequest(){};
+	const useremail = data.userEmail;
+	const pendingemail = data.pendingEmail;
+
+	console.log("user email ", useremail);
+	console.log("pending email", pendingemail);
+	var db = admin.firestore();
+
+	const ref = db.collection("Friends").doc(useremail);
+
+	const remove = ref.update({
+		pending: admin.firestore.FieldValue.arrayRemove(pendingemail)
+	});
+	
+});
 
 function acceptFriendRequest(){};
 
