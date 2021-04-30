@@ -96,7 +96,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
             return;
         }
         if (email.isEmpty()){
-            emailField.setError("emai is not valid");
+            emailField.setError("email is not valid");
             emailField.requestFocus();
             return;
         }
@@ -127,6 +127,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                             List<String> emptyList = new ArrayList<>();
 
                             userfriends.put("Friends", emptyList);
+                            userfriends.put("pending", emptyList);
 
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             db.collection("Friends").document(email)
@@ -141,7 +142,10 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                                         public void onFailure(@NonNull Exception e) {
                                         }
                                     });
-                            FirebaseDatabase.getInstance().getReference("Friends").child(FirebaseAuth.getInstance().getUid())
+                            FirebaseDatabase.getInstance().getReference("friends").child(FirebaseAuth.getInstance().getUid())
+                                    .setValue(emptyList);
+
+                            FirebaseDatabase.getInstance().getReference("pending").child(FirebaseAuth.getInstance().getUid())
                                     .setValue(emptyList);
 
                             FirebaseDatabase.getInstance().getReference("Users")

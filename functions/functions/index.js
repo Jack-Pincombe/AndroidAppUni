@@ -31,9 +31,9 @@ exports.friendExists = functions.https.onCall((data, context) => {
 	const text = data.text;
 	console.log(text);
 
-//	var ref = db.collection("Friends").doc(text);
+//	var ref = db.collection("friends").doc(text);
 
-	return db.collection("Friends").doc(text).get().then((doc) => {
+	return db.collection("friends").doc(text).get().then((doc) => {
 		if (doc.exists) {
 			console.log("success");
 			return "user found";
@@ -47,14 +47,20 @@ exports.friendExists = functions.https.onCall((data, context) => {
 
 
 exports.getFriends = functions.https.onCall((data, context) => {
-	var admin = require("firebase-admin");                                                        if (!admin.apps.length) {                                                                             admin.initializeApp();                                                                }else {                                                                                               admin.app();                                                                          }
+	var admin = require("firebase-admin");
+	console.log("getting friends");
+	if (!admin.apps.length) {
+		admin.initializeApp();
+	}else {
+		admin.app();
+	}
 
-	// email of the current user 
+	// email of the current user
 	const username = data.text;
 	console.log("email: ", username);
 	var db = admin.firestore();
 
-        return db.collection("Friends").doc(username).get().then((doc) => {
+        return db.collection("friends").doc(username).get().then((doc) => {
 		if (doc.exists) {
 			console.log("Data:", doc.data());
 			return doc.data();
@@ -62,11 +68,33 @@ exports.getFriends = functions.https.onCall((data, context) => {
 			console.log("fail");
 			return "user not found";
 		}
-	})    
+	})
 
 });
 
 function addToPending(){};
+exports.sendFriendRequest = functions.https.onCall((data, context) => {
+	var admin = require("firebase-admin");
+	if(!admin.apps.length){
+		admin.initializeApp();
+	}else {
+		admin.app();
+	}
+
+	const useremail = data.email;
+	const pendingemail = data.friend;
+
+	console.log("user email: ", useremail)
+	console.log("pending email ", pendingemail)
+	var db = admin.firestore();
+
+	const ref = db.collection("friends").doc(pendingemail);
+
+	const add = ref.update({
+		pending: admin.firestore.FieldValue.arrayUnion(useremail)
+	})
+})
+
 exports.rejectFriendRequest = functions.https.onCall((data, context) => {
 	var admin = require("firebase-admin");
 	if(!admin.apps.length){
@@ -82,14 +110,44 @@ exports.rejectFriendRequest = functions.https.onCall((data, context) => {
 	console.log("pending email", pendingemail);
 	var db = admin.firestore();
 
-	const ref = db.collection("Friends").doc(useremail);
+	const ref = db.collection("friends").doc(useremail);
 
 	const remove = ref.update({
 		pending: admin.firestore.FieldValue.arrayRemove(pendingemail)
 	});
-	
+
 });
 
 function acceptFriendRequest(){};
 
 
+exports.acceptFriendRequest = functions.https.onCall((data, context) => {
+	var admin = require("firebase-admin");
+
+	if(!admin.apps.length){
+		admin.initializeApp();
+	}else {
+		admin.app();
+	}
+
+	const userEmail = data.userEmail;
+	const pendingEmail = data.pendingEmail;
+
+	var db = admin.firestore();
+
+	const userRef = db.collection("friends").doc(userEmail);
+	const friendRef = db.collection("friends").doc(pendingEmail);
+
+	const userAccept = userRef.update({
+		friends: admin.firestore.FieldValue.arrayUnion(pendingEmail)
+	})
+
+	const friendAccept = friendRef.update({
+		friends: admin.firestore.FieldValue.arrayUnion(userEmail),
+		pending: admin.firestore.FieldValue.arrayRemove(userEmail)
+
+	})
+
+
+
+});

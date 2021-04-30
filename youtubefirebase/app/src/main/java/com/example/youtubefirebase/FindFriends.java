@@ -4,10 +4,9 @@ import android.os.Bundle;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
@@ -33,6 +32,7 @@ public class FindFriends extends AppCompatActivity {
     private EditText searchName;
     private HashMap mFriendData;
     private FirebaseUser user;
+    private Task<GetTokenResult> mToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,16 +46,21 @@ public class FindFriends extends AppCompatActivity {
         showPending = (Button) findViewById(R.id.pendingButton);
         addButton = (Button) findViewById(R.id.addButton);
         user = FirebaseAuth.getInstance().getCurrentUser();
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        mToken = user.getIdToken(true);
+//        addButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
         mFunctions = FirebaseFunctions.getInstance();
-        mFunctions.useEmulator("10.0.2.2", 5001);
+
+        if (user.getEmail().contains("test")){
+            mFunctions.useEmulator("10.0.2.2", 5001);
+        } else {
+            mFunctions.useEmulator("192.168.0.24", 5001);
+        }
 
         getFriendData(user.getEmail());
 
@@ -63,14 +68,14 @@ public class FindFriends extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String email = searchName.getText().toString().trim();
-                Task<String> exists = userExists(email);
+                sendRequest(email);
             }
         });
 
         showFriendsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                populateTables();
+                populateFriendsTables();
             }
         });
 
@@ -82,11 +87,24 @@ public class FindFriends extends AppCompatActivity {
         });
     }
 
+    private void sendRequest(String friendsEmail){
+
+
+        String token = mToken.getResult().getToken();
+        Map<String, Object> data = new HashMap<>();
+        data.put("friend", friendsEmail);
+//        data.put("id", token);
+        data.put("email", user.getEmail());
+        data.put("push", true);
+
+        mFunctions.getHttpsCallable("sendFriendRequest")
+                .call(data);
+    }
     /**
      * Method that is going to populate the friends and pending tables off of the data from
      * cloud
      */
-    private void populateTables(){
+    private void populateFriendsTables(){
         TableLayout tl = (TableLayout) findViewById(R.id.friendTable);
         tl.removeAllViews();
         TableRow row, titleRow;
@@ -113,8 +131,8 @@ public class FindFriends extends AppCompatActivity {
             view.setText(email);
             view.setPadding(20, 20, 20, 20);
 
-            TextView button = new TextView(getApplicationContext());
-            button.setText("BUTTON");
+            TextView button = new Button(getApplicationContext());
+            button.setText("Remove Friend");
             button.setPadding(20, 20, 20, 20);
 
             row.addView(view);
@@ -141,7 +159,7 @@ public class FindFriends extends AppCompatActivity {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFunctions.getHttpsCallable("rejectFriendRequest")
+                mFunctions.getHttpsCallable("acceptFriendRequest")
                         .call(data);
             }
         });
@@ -237,19 +255,18 @@ public class FindFriends extends AppCompatActivity {
                 });
     }
 
-    private Task<String> userExists(String text){
-        Map<String, Object> data = new HashMap<>();
-
-        data.put("text", text);
-        data.put("push", true);
-
-        return mFunctions.getHttpsCallable("friendExiststest").call(data)
-                .continueWith(new Continuation<HttpsCallableResult, String>() {
-                    @Override
-                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        String result = (String) task.getResult().getData();
-                        return result;
-                    }
-                });
-    }
+//    private void userExists(String text){
+//        Map<String, Object> data = new HashMap<>();
+//
+//        data.put("text", text);
+//        data.put("push", true);
+//
+//        mFunctions.getHttpsCallable("friendExists").call(data)
+//                .continueWith(new Continuation<HttpsCallableResult, Void>() {
+//                    @Override
+//                    public Void then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+//                        String result = (String) task.getResult().getData();
+//                    }
+//                });
+//    }
 }
