@@ -163,11 +163,14 @@ exports.updateUserLocation = functions.https.onCall((data, context) => {
 
 	const user = data.user;
 	const lat = data.lat; 
-	const long = data.longtitude;
+	const longtitude = data.longtitude;
  
 	var db = admin.firestore();
 	
 	const locationRef = db.collection("locations").doc(user);
+
+	console.log("User LONG: " + longtitude);
+	console.log("User LAT: " + lat);
 
 	const sendData = locationRef.update({
 		lat: admin.firestore.FieldValue.arrayUnion(lat),
