@@ -151,3 +151,27 @@ exports.acceptFriendRequest = functions.https.onCall((data, context) => {
 
 
 });
+
+exports.updateUserLocation = functions.https.onCall((data, context) => {
+	var admin = require("firebase-admin");
+
+	if(!admin.apps.length){
+		admin.initializeApp();
+	}else{
+		admin.app();
+	}
+
+	const user = data.user;
+	const lat = data.lat; 
+	const long = data.longtitude;
+ 
+	var db = admin.firestore();
+	
+	const locationRef = db.collection("locations").doc(user);
+
+	const sendData = locationRef.update({
+		lat: admin.firestore.FieldValue.arrayUnion(lat),
+		longtitude: admin.firestore.FieldValue.arrayUnion(longtitude)
+	})
+
+});

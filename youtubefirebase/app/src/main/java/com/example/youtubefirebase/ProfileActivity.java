@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.BitSet;
 import java.util.Date;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
@@ -27,8 +28,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private String userId;
 
-    private Button addFriend;
-    private Button logout;
+    private Button addFriend, logout, startRide;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +37,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         addFriend = (Button) findViewById(R.id.addFriend);
         logout = (Button) findViewById(R.id.signOut);
+        startRide = (Button) findViewById(R.id.startRide);
 
         addFriend.setOnClickListener(this);
         logout.setOnClickListener(this);
+        startRide.setOnClickListener(this);
         //
 //        logout.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -96,6 +99,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         break;
                     case R.id.addFriend:
                         startActivity(new Intent(ProfileActivity.this, FindFriends.class));
+                        break;
+                    case R.id.startRide:
+                        startActivity(new Intent(ProfileActivity.this, StartRide.class));
+                        break;
                 }
     }
 }

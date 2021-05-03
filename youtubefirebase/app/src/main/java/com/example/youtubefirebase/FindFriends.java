@@ -46,13 +46,6 @@ public class FindFriends extends AppCompatActivity {
         showPending = (Button) findViewById(R.id.pendingButton);
         addButton = (Button) findViewById(R.id.addButton);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        mToken = user.getIdToken(true);
-//        addButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
 
         mFunctions = FirebaseFunctions.getInstance();
 
