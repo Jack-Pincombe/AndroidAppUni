@@ -8,10 +8,10 @@
     tools:context=".StartRide">
 
     <Button
-        android:id="@+id/startridebutton"
+        android:id="@+id/stopridebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/start_ride"
+        android:text="stop tracking"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -35,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Time Tracking"
-        app:layout_constraintBottom_toTopOf="@+id/startridebutton"
+        app:layout_constraintBottom_toTopOf="@+id/stopridebutton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status_view" />
@@ -48,5 +48,17 @@
         android:text="Current location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startridebutton" />
+        app:layout_constraintTop_toBottomOf="@+id/stopridebutton" />
+
+    <Button
+        android:id="@+id/startridebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="116dp"
+        android:layout_marginLeft="116dp"
+        android:text="Start Tracking"
+        app:layout_constraintBottom_toTopOf="@+id/locationtext"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stopridebutton"
+        app:layout_constraintVertical_bias="0.527" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -151,6 +151,26 @@ exports.acceptFriendRequest = functions.https.onCall((data, context) => {
 
 
 });
+exports.stopTrackingRider = functions.https.onCall((data, context) => {
+	var admin = require("firebase-admin");
+
+	if(!admin.length){
+		admin.initializeApp();
+	}else{
+		admin.app();
+	}
+
+	var db = admin.firestore();
+	const user = data.email;
+	const locationRef = db.collection("locations").doc(user);
+
+	console.log("attempting to remove users last location");
+	const removeData = locationRef.update({
+		lat: admin.firestore.FieldValue.arrayUnion("0"),
+		longtitude: admin.firestore.FieldValue.arrayUnion("0")
+	})
+
+});
 
 exports.updateUserLocation = functions.https.onCall((data, context) => {
 	var admin = require("firebase-admin");
@@ -168,7 +188,7 @@ exports.updateUserLocation = functions.https.onCall((data, context) => {
 	var db = admin.firestore();
 	
 	const locationRef = db.collection("locations").doc(user);
-
+	
 	console.log("User LONG: " + longtitude);
 	console.log("User LAT: " + lat);
 
