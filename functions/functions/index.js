@@ -1,18 +1,12 @@
 const functions = require("firebase-functions");
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-//
+	
 exports.addMessage = functions.https.onCall((data, context) => {
 	const text = data.text;
 	const uid = context.auth.uid;
 	return "Message received";
 });
+
 
 // method that is going to be attempting to add a friend
 //
@@ -68,11 +62,10 @@ exports.getFriends = functions.https.onCall((data, context) => {
 			console.log("fail");
 			return "user not found";
 		}
-	})
+	});
 
 });
 
-function addToPending(){};
 exports.sendFriendRequest = functions.https.onCall((data, context) => {
 	var admin = require("firebase-admin");
 	if(!admin.apps.length){
@@ -92,8 +85,8 @@ exports.sendFriendRequest = functions.https.onCall((data, context) => {
 
 	const add = ref.update({
 		pending: admin.firestore.FieldValue.arrayUnion(useremail)
-	})
-})
+	});
+});
 
 exports.rejectFriendRequest = functions.https.onCall((data, context) => {
 	var admin = require("firebase-admin");
@@ -140,13 +133,13 @@ exports.acceptFriendRequest = functions.https.onCall((data, context) => {
 
 	const userAccept = userRef.update({
 		friends: admin.firestore.FieldValue.arrayUnion(pendingEmail)
-	})
+	});
 
 	const friendAccept = friendRef.update({
 		friends: admin.firestore.FieldValue.arrayUnion(userEmail),
 		pending: admin.firestore.FieldValue.arrayRemove(userEmail)
 
-	})
+	});
 
 
 
@@ -168,13 +161,15 @@ exports.stopTrackingRider = functions.https.onCall((data, context) => {
 	const removeData = locationRef.update({
 		lat: admin.firestore.FieldValue.arrayUnion("0"),
 		longtitude: admin.firestore.FieldValue.arrayUnion("0")
-	})
+	});
 
 });
 
+
+
 exports.updateUserLocation = functions.https.onCall((data, context) => {
 	var admin = require("firebase-admin");
-
+	console.log("testing save21");
 	if(!admin.apps.length){
 		admin.initializeApp();
 	}else{
@@ -195,6 +190,66 @@ exports.updateUserLocation = functions.https.onCall((data, context) => {
 	const sendData = locationRef.update({
 		lat: admin.firestore.FieldValue.arrayUnion(lat),
 		longtitude: admin.firestore.FieldValue.arrayUnion(longtitude)
-	})
+	});
 
+});
+
+
+
+exports.populateDB = functions.https.onCall((data, context) => {
+	var admin = require("firebase-admin");
+
+	if(!admin.apps.length){
+		admin.initializeApp();
+
+	} else{
+		admin.app();
+	}
+
+	// method that is going to be populating the friends db FRIENDS db
+	var db = admin.firestore();
+	const testfriend = db.collection("friends").doc("test@test.com");
+	const jackfriend = db.collection("friends").doc("jackpincombe@hotmail.com"); 
+	const court = db.collection("friends").doc("court@gmail.com");
+
+	const data1 = {friends:["added@test.com"],pending:["pending@pending.com"]};
+	const data2 = {friends:[],pending:[]};
+	const data3 = {friends:[],pending:[]};
+
+	const da = testfriend.set(data1);
+	const ddd = jackfriend.set(data2);
+	const sfdafga = court.set(data3);
+
+
+	// where we are going to be populating where we are adding the coords LOCATIONS DB
+	const locationRef = db.collection("locations").doc("test@test.com");
+	const f1 = db.collection("locations").doc("jackpincombe@hotmail.com");
+	const f2 = db.collection("locations").doc("emailtotest@test.com");
+
+	const a = {
+		longtitude: "0",
+		lat: "0"
+	};
+
+	const ab = {
+		longtitude: "0",
+		lat: "0"
+	};
+
+
+	const abc = {
+		longtitude: "0",
+		lat: "0"
+	};
+
+	const asdfasdf = locationRef.set(a);
+	const testtest = f1.set(ab);
+	const rewq = f2.set(abc);
+});
+
+
+exports.updateUserLocationTrigger = functions.firestore
+	.document('/{locations}/{asdf}/{longtitude}')
+	.onUpdate(changde => {
+	console.log("data:");
 });

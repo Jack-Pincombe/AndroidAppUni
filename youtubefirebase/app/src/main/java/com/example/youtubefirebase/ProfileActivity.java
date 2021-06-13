@@ -17,9 +17,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.BitSet;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -28,7 +31,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private String userId;
 
-    private Button addFriend, logout, startRide, maps;
+    private Button addFriend, logout, startRide, maps, testdata;
+
+    /**
+     * method that is used purely fo rhr the testing that is going to populate the firestore db for us
+     *
+     * @param savedInstanceState
+     */
+    public void populateTesting() {
+        Map<String, String> data = new HashMap<>();
+        FirebaseFunctions functions = FirebaseFunctions.getInstance();
+        functions.useEmulator("10.0.2.2", 5001);
+        functions.getHttpsCallable("populateDB").call(data);
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +57,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         startRide = (Button) findViewById(R.id.startRide);
         maps = (Button) findViewById(R.id.goToMap);
 
+        testdata = findViewById(R.id.dbdata);
+
+        testdata.setOnClickListener(this);
         maps.setOnClickListener(this);
         addFriend.setOnClickListener(this);
         logout.setOnClickListener(this);
@@ -108,6 +128,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     case R.id.goToMap:
                         startActivity(new Intent(ProfileActivity.this, MapsActivity.class));
                         break;
+                    case R.id.dbdata:
+                        populateTesting();
                 }
     }
 }
