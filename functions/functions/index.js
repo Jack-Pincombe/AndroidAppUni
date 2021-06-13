@@ -190,7 +190,7 @@ exports.updateUserLocation = functions.https.onCall((data, context) => {
 	const sendData = locationRef.update({
 		lat: admin.firestore.FieldValue.arrayUnion(lat),
 		longtitude: admin.firestore.FieldValue.arrayUnion(longtitude)
-	});
+	})
 
 });
 
@@ -248,8 +248,12 @@ exports.populateDB = functions.https.onCall((data, context) => {
 });
 
 
+exports.triggermethod = functions.firestore.document('/locations/').onWrite(test => {
+	console.log("HITTING THE TRIGGER METHOD");
+});
+
 exports.updateUserLocationTrigger = functions.firestore
-	.document('/{locations}/{asdf}/{longtitude}')
-	.onUpdate(changde => {
+	.document('/locations/{asdf}/{longtitude}')
+	.onWrite(change => {
 	console.log("data:");
 });
