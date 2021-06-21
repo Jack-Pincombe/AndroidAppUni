@@ -17,16 +17,17 @@ import com.google.firebase.functions.FirebaseFunctions;
 import java.util.HashMap;
 import java.util.Map;
 
-public  class StartRide extends AppCompatActivity {
+public class StartRide extends AppCompatActivity {
     private FirebaseFunctions mFunctions;
     private FirebaseUser mUser;
     private Button startRideButton, stopRideButton;
     private Intent trackingIntent;
     private TextView status;
+
     /**
      * method that is going to be stopping the tracking of the user
      */
-    public void stopTracking(){
+    public void stopTracking() {
         Map<String, String> data = new HashMap<>();
         data.put("email", mUser.getEmail());
         mFunctions.getHttpsCallable("stopTrackingRider").call(data);
@@ -40,8 +41,8 @@ public  class StartRide extends AppCompatActivity {
     /**
      * method that is going to start the service that will track the user
      */
-    public void startTracking(){
-        if (!isCurrentlyTracking()){
+    public void startTracking() {
+        if (!isCurrentlyTracking()) {
             trackingIntent = new Intent(this, RideTrackingService.class);
             startService(trackingIntent);
             status.setText("Currently tracking");
@@ -50,8 +51,8 @@ public  class StartRide extends AppCompatActivity {
 
     private boolean isCurrentlyTracking() {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
-            if("com.example.youtubefirebase.utilities.RideTrackingService".equals(service.service.getClassName())) {
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if ("com.example.youtubefirebase.utilities.RideTrackingService".equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -71,13 +72,13 @@ public  class StartRide extends AppCompatActivity {
         startRideButton = findViewById(R.id.startridebutton);
         stopRideButton = findViewById(R.id.stopridebutton);
         RideTrackingService service;
-        if (mUser.getEmail().contains("test") || mUser.getEmail().contains("fake")){
+        if (mUser.getEmail().contains("test") || mUser.getEmail().contains("fake")) {
             mFunctions.useEmulator("10.0.2.2", 5001);
         } else {
-            mFunctions.useEmulator("192.168.0.24", 5001);
+            //  mFunctions.useEmulator("192.168.0.24", 5001);
         }
 
-        if (isCurrentlyTracking()){
+        if (isCurrentlyTracking()) {
             status.setText("Currently Tracking");
         } else {
             status.setText("Currently not tracking");
@@ -96,6 +97,6 @@ public  class StartRide extends AppCompatActivity {
                 stopTracking();
             }
         });
-        }
     }
+}
 

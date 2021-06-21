@@ -33,16 +33,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private Button addFriend, logout, startRide, maps, testdata;
 
-    /**
-     * method that is used purely fo rhr the testing that is going to populate the firestore db for us
-     *
-     * @param savedInstanceState
-     */
+
     public void populateTesting() {
         Map<String, String> data = new HashMap<>();
         FirebaseFunctions functions = FirebaseFunctions.getInstance();
-        functions.useEmulator("10.0.2.2", 5001);
-        functions.getHttpsCallable("populateDB").call(data);
+        if (user.getEmail().contains("test")){
+            functions.useEmulator("10.0.2.2", 5001);
+        }        functions.getHttpsCallable("populateDB").call(data);
     }
 
 

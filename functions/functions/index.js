@@ -1,12 +1,30 @@
 const functions = require("firebase-functions");
+var admin = require("firebase-admin");
 
-	
+
+	if (!admin.apps.length) {
+		admin.initializeApp();
+	}else {
+		admin.app();
+	}
 exports.addMessage = functions.https.onCall((data, context) => {
 	const text = data.text;
 	const uid = context.auth.uid;
 	return "Message received";
 });
 
+exports.updateUserLocationTrigger = functions.firestore
+	.document('locations/{locations}')
+	.onWrite((snapshot, change) => {
+		const data = snapshot.after.data();
+		const name = data.lat;
+
+		console.log("Data for lat: " + name);
+
+		
+
+	return;
+});
 
 // method that is going to be attempting to add a friend
 //
@@ -35,15 +53,15 @@ exports.friendExists = functions.https.onCall((data, context) => {
 			console.log("fail");
 			return "user not found";
 		}
-	})
+	});
 
 });
 
 
 exports.getFriends = functions.https.onCall((data, context) => {
 	var admin = require("firebase-admin");
-	console.log("getting friends");
-	if (!admin.apps.length) {
+	console.log("getting friends")
+	;if (!admin.apps.length) {
 		admin.initializeApp();
 	}else {
 		admin.app();
@@ -168,13 +186,7 @@ exports.stopTrackingRider = functions.https.onCall((data, context) => {
 
 
 exports.updateUserLocation = functions.https.onCall((data, context) => {
-	var admin = require("firebase-admin");
-	console.log("testing save21");
-	if(!admin.apps.length){
-		admin.initializeApp();
-	}else{
-		admin.app();
-	}
+
 
 	const user = data.user;
 	const lat = data.lat; 
@@ -192,6 +204,7 @@ exports.updateUserLocation = functions.https.onCall((data, context) => {
 		longtitude: admin.firestore.FieldValue.arrayUnion(longtitude)
 	})
 
+	return;
 });
 
 
@@ -211,6 +224,7 @@ exports.populateDB = functions.https.onCall((data, context) => {
 	const testfriend = db.collection("friends").doc("test@test.com");
 	const jackfriend = db.collection("friends").doc("jackpincombe@hotmail.com"); 
 	const court = db.collection("friends").doc("court@gmail.com");
+	const abdaa = db.collection("friends").doc("a@b.com");
 
 	const data1 = {friends:["added@test.com"],pending:["pending@pending.com"]};
 	const data2 = {friends:[],pending:[]};
@@ -219,12 +233,13 @@ exports.populateDB = functions.https.onCall((data, context) => {
 	const da = testfriend.set(data1);
 	const ddd = jackfriend.set(data2);
 	const sfdafga = court.set(data3);
-
+	const friendsf = abdaa.set(data3);
 
 	// where we are going to be populating where we are adding the coords LOCATIONS DB
 	const locationRef = db.collection("locations").doc("test@test.com");
 	const f1 = db.collection("locations").doc("jackpincombe@hotmail.com");
 	const f2 = db.collection("locations").doc("emailtotest@test.com");
+	const f3 = db.collection("locations").doc("a@b.com");
 
 	const a = {
 		longtitude: "0",
@@ -245,15 +260,12 @@ exports.populateDB = functions.https.onCall((data, context) => {
 	const asdfasdf = locationRef.set(a);
 	const testtest = f1.set(ab);
 	const rewq = f2.set(abc);
+	const bcad = f3.set(abc);
 });
 
 
-exports.triggermethod = functions.firestore.document('/locations/').onWrite(test => {
+exports.triggermethod1 = functions.firestore.document('/locations/').onWrite(test => {
 	console.log("HITTING THE TRIGGER METHOD");
 });
 
-exports.updateUserLocationTrigger = functions.firestore
-	.document('/locations/{asdf}/{longtitude}')
-	.onWrite(change => {
-	console.log("data:");
-});
+
