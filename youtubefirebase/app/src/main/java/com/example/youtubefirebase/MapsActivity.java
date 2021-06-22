@@ -114,17 +114,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // attempt to plot the data onto the map
                     for (String x : friendsLocationList.keySet()){
                         System.out.println(x);
-                        double lat = (double) friendsLocationList.get(x).get("lat");
-                        double longtitude = (double) friendsLocationList.get(x).get("longtitude");
-                        if (lat != 0 && longtitude != 0){
-                            LatLng userLocation = new LatLng(lat, longtitude);
+                        HashMap map = (HashMap) friendLocation.get(x);
+                        List latlist = (List) friendsLocationList.get(x).get("lat");
+                        List longlist = (List) friendsLocationList.get(x).get("longtitude");
+
+                        double lat = (double) latlist.get(0);
+                        double longtitude = (double) longlist.get(0);
+                        if (lat != 0 && longtitude != 0) {
+                            LatLng userLocation = new LatLng((int)lat, (int)longtitude);
                             mMap.addMarker(new MarkerOptions().position(userLocation).title(x));
                     }}
                 }
                 else {
                     m_handler.removeCallbacks(m_plotFriendLocation);
                 }
-                m_handler.postDelayed(m_plotFriendLocation, 1500);
+                m_handler.postDelayed(m_plotFriendLocation, 10000);
             }
         };
 
