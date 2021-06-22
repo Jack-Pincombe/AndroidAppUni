@@ -17,14 +17,73 @@ exports.updateUserLocationTrigger = functions.firestore
 	.document('locations/{locations}')
 	.onWrite((snapshot, change) => {
 		const data = snapshot.after.data();
-		const name = data.lat;
+		const latitude = data.lat;
+		const longtitude = data.longtitude;
+		const useremail = change.params.locations;
 
-		console.log("Data for lat: " + name);
+		console.log("the username is: " + useremail);
+		console.log("Data for lat: " + latitude);
+		console.log("data for long: " + longtitude);
 
-		
+		console.log("writing to the user db");
+
+
+		var db = admin.firestore();
+
+		const userRef = db.collection("friends").doc(useremail);
+
+	const sendData = userRef.update({
+		lat: admin.firestore.FieldValue.arrayUnion(latitude),
+		long: admin.firestore.FieldValue.arrayUnion(longtitude)
+	})
+
+
+
+		return;
+});
+
+	exports.updateUserLocation = functions.https.onCall((data, context) => {
+
+
+	const user = data.user;
+	const lat = data.lat; 
+	const longtitude = data.longtitude;
+ 
+	var db = admin.firestore();
+	
+	const locationRef = db.collection("locations").doc(user);
+	
+	console.log("User LONG: " + longtitude);
+	console.log("User LAT: " + lat);
+
+	const sendData = locationRef.set({
+		lat: admin.firestore.FieldValue.arrayUnion(lat),
+		longtitude: admin.firestore.FieldValue.arrayUnion(longtitude)
+	})
 
 	return;
 });
+
+
+// method that is going to return the users friends and their locations
+exports.getFriendLocation = functions.https.onCall((data, context) =>{
+
+	const user = data.email;
+
+	var db = admin.firestore();
+	const locationRef = db.collection("locations").doc(user);
+
+        return db.collection("locations").doc(user).get().then((doc) => {
+		if (doc.exists) {
+			console.log("Data:", doc.data());
+			return doc.data();
+		}else {
+			console.log("fail");
+			return "user not found";
+		}
+	});
+
+	});
 
 // method that is going to be attempting to add a friend
 //
@@ -176,7 +235,7 @@ exports.stopTrackingRider = functions.https.onCall((data, context) => {
 	const locationRef = db.collection("locations").doc(user);
 
 	console.log("attempting to remove users last location");
-	const removeData = locationRef.update({
+	const removeData = locationRef.set({
 		lat: admin.firestore.FieldValue.arrayUnion("0"),
 		longtitude: admin.firestore.FieldValue.arrayUnion("0")
 	});
@@ -185,27 +244,7 @@ exports.stopTrackingRider = functions.https.onCall((data, context) => {
 
 
 
-exports.updateUserLocation = functions.https.onCall((data, context) => {
 
-
-	const user = data.user;
-	const lat = data.lat; 
-	const longtitude = data.longtitude;
- 
-	var db = admin.firestore();
-	
-	const locationRef = db.collection("locations").doc(user);
-	
-	console.log("User LONG: " + longtitude);
-	console.log("User LAT: " + lat);
-
-	const sendData = locationRef.update({
-		lat: admin.firestore.FieldValue.arrayUnion(lat),
-		longtitude: admin.firestore.FieldValue.arrayUnion(longtitude)
-	})
-
-	return;
-});
 
 
 
@@ -226,9 +265,9 @@ exports.populateDB = functions.https.onCall((data, context) => {
 	const court = db.collection("friends").doc("court@gmail.com");
 	const abdaa = db.collection("friends").doc("a@b.com");
 
-	const data1 = {friends:["added@test.com"],pending:["pending@pending.com"]};
+	const data1 = {friends:["a@b.com"],pending:["pending@pending.com"]};
 	const data2 = {friends:[],pending:[]};
-	const data3 = {friends:[],pending:[]};
+	const data3 = {friends:[],pending:[], lat:[], long:[]};
 
 	const da = testfriend.set(data1);
 	const ddd = jackfriend.set(data2);

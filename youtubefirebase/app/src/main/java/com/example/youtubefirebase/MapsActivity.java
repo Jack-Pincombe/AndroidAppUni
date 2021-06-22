@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 
 import com.example.youtubefirebase.utilities.RideTrackingService;
@@ -27,6 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +42,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FirebaseUser m_user;
     private FirebaseFunctions mFunctions;
     private List m_friends;
+    HashMap<String, HashMap> friendsLocationList = new HashMap<String, HashMap>();
+
+
+    private HashMap mFriendData;
+    private HashMap friendLocation;
     private HashMap m_locations;
 
+    private Handler m_handler;
+    Runnable m_GetFriendLocationsHandler;
+
+    Runnable m_plotFriendLocation;
+
+    /**
+     * process of getting the locatoins of the users friends and then plotting them to the map
+     *
+     * 1 get a list of the friends
+     * 2 iterate through the list and request that users locations
+     * 3 then iterate over list and then plot the coords on teh map
+     */
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -73,6 +92,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mFunctions.useEmulator("192.168.0.24", 5001);
         }
 
+
+
+        getFriendData();
         // TODO get the current location of the rider
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
@@ -81,9 +103,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 longtitude = intent.getStringExtra("longtitude");
             }
         }, new IntentFilter("maptest"));
+
+        m_handler = new Handler();
+
+        m_plotFriendLocation = new Runnable() {
+            @Override
+            public void run() {
+                if (!(friendsLocationList == null)){
+
+                    // attempt to plot the data onto the map
+                    for (String x : friendsLocationList.keySet()){
+                        System.out.println(x);
+                        double lat = (double) friendsLocationList.get(x).get("lat");
+                        double longtitude = (double) friendsLocationList.get(x).get("longtitude");
+                        if (lat != 0 && longtitude != 0){
+                            LatLng userLocation = new LatLng(lat, longtitude);
+                            mMap.addMarker(new MarkerOptions().position(userLocation).title(x));
+                    }}
+                }
+                else {
+                    m_handler.removeCallbacks(m_plotFriendLocation);
+                }
+                m_handler.postDelayed(m_plotFriendLocation, 1500);
+            }
+        };
+
+        m_GetFriendLocationsHandler = new Runnable() {
+            @Override
+            public void run() {
+                if (!(mFriendData == null)) {
+                    System.out.println("gotten the friend data");
+                    getFriendsLocations();
+                }
+                else {
+                    m_handler.removeCallbacks(m_GetFriendLocationsHandler);
+                }
+                m_handler.postDelayed(m_GetFriendLocationsHandler, 1500);
+            }
+        };
+
+        m_plotFriendLocation.run();
+        m_GetFriendLocationsHandler.run();
         // TODO create the map that is going to contain the locations of the users friends
     }
 
+    private void getFriendsLocations(){
+        HashMap<String, String> friendsLocation = new HashMap<>();
+        List<String> friends = (List<String>) mFriendData.get("friends");
+
+        for (String friend : friends){
+            System.out.println("looking for friend: " + friend);
+
+            Map<String, String> data = new HashMap<>();
+            data.put("email", friend);
+
+            mFunctions
+                    .getHttpsCallable("getFriendLocation")
+                    .call(data)
+                    .continueWith(new Continuation<HttpsCallableResult, HashMap>() {
+                        @Override
+                        public HashMap then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                            HashMap map = (HashMap) task.getResult().getData();
+                            friendLocation = map;
+                            friendsLocationList.put(friend, friendLocation);
+                            return map;
+                        }
+                    });
+        }
+    }
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -96,14 +183,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-
-        /**
-         * call to cloud and get the friends location map
-         * plot each location on map
-         */
-
-
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(54.6, -5.9);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -115,25 +194,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // TODO create markers with the coords of the locations of the friends
     }
 
-    private HashMap getFriendsLocations(){
-        Map<Object, Object> data = new HashMap<>();
+
+    private void getFriendData(){
+        Map<String, Object> data = new HashMap<>();
 
         data.put("text", m_user.getEmail());
         data.put("push", true);
 
-        mFunctions.getHttpsCallable("getLocations")
-                .call()
+        mFunctions
+                .getHttpsCallable("getFriends")
+                .call(data)
                 .continueWith(new Continuation<HttpsCallableResult, HashMap>() {
                     @Override
                     public HashMap then(@NonNull Task<HttpsCallableResult> task) throws Exception {
                         HashMap map = (HashMap) task.getResult().getData();
-//                        m_friends = map;
+                        mFriendData = map;
                         return map;
                     }
                 });
-        return null;
     }
-
     /**
      * method that will return a map of the users friends and their locations, will be called every
      * 15 seconds

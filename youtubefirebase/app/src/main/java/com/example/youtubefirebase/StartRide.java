@@ -72,10 +72,10 @@ public class StartRide extends AppCompatActivity {
         startRideButton = findViewById(R.id.startridebutton);
         stopRideButton = findViewById(R.id.stopridebutton);
         RideTrackingService service;
-        if (mUser.getEmail().contains("test") || mUser.getEmail().contains("fake")) {
+        if (mUser.getEmail().contains("test") || mUser.getEmail().contains("fake") || mUser.getEmail().contains("a")) {
             mFunctions.useEmulator("10.0.2.2", 5001);
         } else {
-            //  mFunctions.useEmulator("192.168.0.24", 5001);
+              mFunctions.useEmulator("192.168.0.24", 5001);
         }
 
         if (isCurrentlyTracking()) {
