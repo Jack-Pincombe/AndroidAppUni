@@ -264,42 +264,48 @@ exports.populateDB = functions.https.onCall((data, context) => {
 	const jackfriend = db.collection("friends").doc("jackpincombe@hotmail.com"); 
 	const court = db.collection("friends").doc("court@gmail.com");
 	const abdaa = db.collection("friends").doc("a@b.com");
+	const real = db.collection("friends").doc("real@real.com");
 
 	const data1 = {friends:["a@b.com"],pending:["pending@pending.com"]};
-	const data2 = {friends:[],pending:[]};
-	const data3 = {friends:[],pending:[], lat:[], long:[]};
+	const data2 = {friends:["test@test.com"],pending:[]};
+	const data3 = {friends:["test@test.com","real@real.com"],pending:[], lat:[], long:[]};
+	const dataReal = {friends:["a@b.com", "test@test.com"],pending:["pending@pending.com"]};
+
 
 	const da = testfriend.set(data1);
 	const ddd = jackfriend.set(data2);
 	const sfdafga = court.set(data3);
 	const friendsf = abdaa.set(data3);
+	const realDataSet = real.set(dataReal);
 
 	// where we are going to be populating where we are adding the coords LOCATIONS DB
 	const locationRef = db.collection("locations").doc("test@test.com");
 	const f1 = db.collection("locations").doc("jackpincombe@hotmail.com");
 	const f2 = db.collection("locations").doc("emailtotest@test.com");
 	const f3 = db.collection("locations").doc("a@b.com");
+	const f4 = db.collection("locations").doc("real@real.com");
 
 	const a = {
-		longtitude: "0",
-		lat: "0"
+		longtitude: 0,
+		lat: 0
 	};
 
 	const ab = {
-		longtitude: "0",
-		lat: "0"
+		longtitude: 0,
+		lat: 0
 	};
 
 
 	const abc = {
-		longtitude: "0",
-		lat: "0"
+		longtitude: 0,
+		lat: 0
 	};
 
 	const asdfasdf = locationRef.set(a);
 	const testtest = f1.set(ab);
 	const rewq = f2.set(abc);
 	const bcad = f3.set(abc);
+	const realLocationSet = f4.set(abc);
 });
 
 

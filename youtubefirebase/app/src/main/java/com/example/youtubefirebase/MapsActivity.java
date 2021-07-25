@@ -47,7 +47,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private HashMap mFriendData;
     private HashMap friendLocation;
-    private HashMap m_locations;
 
     private Handler m_handler;
     Runnable m_GetFriendLocationsHandler;
@@ -86,13 +85,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         m_user = FirebaseAuth.getInstance().getCurrentUser();
         mFunctions = FirebaseFunctions.getInstance();
 
-        if (m_user.getEmail().contains("test")){
+        if (m_user.getEmail().contains("test") || m_user.getEmail().contains("b")){
             mFunctions.useEmulator("10.0.2.2", 5001);
         } else {
             mFunctions.useEmulator("192.168.0.24", 5001);
         }
-
-
 
         getFriendData();
         // TODO get the current location of the rider
@@ -111,24 +108,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void run() {
                 if (!(friendsLocationList == null)){
 
+                    if (!(mMap == null)) {
+                        mMap.clear();
+                    }
                     // attempt to plot the data onto the map
                     for (String x : friendsLocationList.keySet()){
-                        System.out.println(x);
-                        HashMap map = (HashMap) friendLocation.get(x);
-                        List latlist = (List) friendsLocationList.get(x).get("lat");
-                        List longlist = (List) friendsLocationList.get(x).get("longtitude");
 
-                        double lat = (double) latlist.get(0);
-                        double longtitude = (double) longlist.get(0);
-                        if (lat != 0 && longtitude != 0) {
-                            LatLng userLocation = new LatLng((int)lat, (int)longtitude);
-                            mMap.addMarker(new MarkerOptions().position(userLocation).title(x));
-                    }}
+                        try {
+                            System.out.println(x);
+                            List latlist = (List) friendsLocationList.get(x).get("lat");
+                            List longlist = (List) friendsLocationList.get(x).get("longtitude");
+
+                            double lat = (double) latlist.get(0);
+                            double longtitude = (double) longlist.get(0);
+                            if (lat != 0 && longtitude != 0) {
+                                LatLng userLocation = new LatLng(lat, longtitude);
+                                mMap.addMarker(new MarkerOptions().position(userLocation).title(x));
+                            }
+                        } catch (Exception e){
+                            System.out.println("passing on the user: " + x);
+                            continue;
+                        }
+}
                 }
                 else {
                     m_handler.removeCallbacks(m_plotFriendLocation);
                 }
-                m_handler.postDelayed(m_plotFriendLocation, 10000);
+                m_handler.postDelayed(m_plotFriendLocation, 5000);
             }
         };
 
@@ -242,10 +248,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return null;
     }
 
-    /**
-     * method that is going to plot the friends locations on the map
-     */
-    private void plotFriendsLocations(Map<Object,Object> friendsLocations){
 
-    }
 }
