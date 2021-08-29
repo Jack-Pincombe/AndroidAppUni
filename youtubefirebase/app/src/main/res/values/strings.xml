@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">youtubefirebase</string>
+    <string name="app_name">BikeTracker</string>
     <string name="title">Motorbike Tracking</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -22,4 +22,5 @@
     <string name="title_activity_start_ride">StartRide</string>
     <string name="start_ride">Start Ride</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_landing_page">landingPage</string>
 </resources>
