@@ -8,15 +8,15 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="293dp"
-        android:layout_height="61dp"
+        android:layout_width="392dp"
+        android:layout_height="65dp"
+        android:clickable="true"
         android:text="@string/title"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="33dp"
-        android:clickable="true"
-        />
+        tools:layout_editor_absoluteY="28dp" />
 
     <EditText
         android:id="@+id/nameField"

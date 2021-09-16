@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="landingimage.jpg"
+    android:background="@drawable/landingimage"
     tools:context=".landingPage">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.Youtubefirebase.AppBarOverlay"/>
+        android:theme="@style/Theme.Youtubefirebase.AppBarOverlay" />
 
     <include layout="@layout/content_landing_page" />
 
     <ImageView
+        android:id="@+id/image"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/image"
-        android:src="@drawable/Image"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        android:src="@drawable/landingimage" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

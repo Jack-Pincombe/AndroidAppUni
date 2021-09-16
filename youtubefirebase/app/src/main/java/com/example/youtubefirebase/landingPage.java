@@ -1,5 +1,6 @@
 package com.example.youtubefirebase;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -10,6 +11,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 
+import java.util.concurrent.TimeUnit;
+
 public class landingPage extends AppCompatActivity {
 
     @Override
@@ -19,6 +22,12 @@ public class landingPage extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        try {
+            TimeUnit.SECONDS.sleep(5);
+            startActivity(new Intent(this, MainActivity.class));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 }
